@@ -17,13 +17,13 @@ from binascii import hexlify as hx, unhexlify as uhx
 from hashlib import sha256
 from struct import pack as pk, unpack as upk
 from io import TextIOWrapper
-import Titles
+from nut import Titles
 import requests
 import unidecode
 import urllib3
-import Print
-import Status
-import Config
+from nut import Print
+from nut import Status
+from nut import Config
 
 #Global Vars
 titlekey_list = []
@@ -144,7 +144,7 @@ def make_request(method, url, certificate='', hdArgs={}):
 	if certificate == '':  # Workaround for defining errors
 		certificate = NXclientPath
 
-	fw = '6.0.0-5.0' #hard coding this incase newbs forget to update
+	fw = '7.0.1-1.0' #hard coding this incase newbs forget to update
 
 	reqHd = {
 		'X-Nintendo-DenebEdgeToken': Config.edgeToken.token,
@@ -309,7 +309,7 @@ def decrypt_NCA(fPath, outDir=''):
 		Print.debug(commandLine)
 		subprocess.check_output(commandLine, shell=True)
 		if os.listdir(outDir) == []:
-			raise subprocess.CalledProcessError('Decryption failed, output folder %s is empty!' % outDir)
+			raise subprocess.CalledProcessError('Decryption failed, output folder %s is empty!' % outDir, cmd = commandLine)
 	except subprocess.CalledProcessError:
 		Print.error('Decryption failed!')
 		raise
@@ -462,7 +462,8 @@ def download_title(gameDir, titleId, ver, tkey=None, nspRepack=False, n='', veri
 				NCAs[type].append(download_file(url, fPath, titleId))
 				if verify:
 					if calc_sha256(fPath) != CNMT.parse(CNMT.ncaTypes[type])[ncaID][2]:
-						Print.error('%s is corrupted, hashes don\'t match!' % os.path.basename(fPath))
+						os.remove(fPath)
+						raise BaseException('%s is corrupted, hashes don\'t match!' % os.path.basename(fPath))
 					else:
 						Print.info('Verified %s...' % os.path.basename(fPath))
 
@@ -492,7 +493,7 @@ def download_game(titleId, ver, tkey=None, nspRepack=False, name='', verify=Fals
 	name = get_name(titleId)
 	gameType = ''
 
-	if name == 'Uknown Title':
+	if name == 'Unknown Title':
 		temp = "[" + titleId + "]"
 	else:
 		temp = name + " [" + titleId + "]"
@@ -599,8 +600,8 @@ class cnmt:
 		self.type = self.packTypes[read_u8(f, 0xC)]
 		self.id = '0%s' % format(read_u64(f, 0x0), 'x')
 		self.ver = str(read_u32(f, 0x8))
-		self.sysver = str(read_u64(f, 0x28))
-		self.dlsysver = str(read_u64(f, 0x18))
+		self.sysver = str(read_u32(f, 0x28))
+		self.dlsysver = str(read_u32(f, 0x18))
 		self.digest = hx(read_at(f, f.seek(0, 2) - 0x20, f.seek(0, 2))).decode()
 
 		with open(hdPath, 'rb') as ncaHd:

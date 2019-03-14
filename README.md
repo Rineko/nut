@@ -19,19 +19,40 @@ It can download any titles you do not have a key for (for archiving), by enablin
 	- `keys.txt`
  - Install Python 3.6+
  - Install the following modules via `pip`:
- 	 - `pip3 install colorama pyopenssl requests tqdm unidecode image bs4 urllib3 flask`
+ 	 - `pip3 install colorama pyopenssl requests tqdm unidecode image bs4 urllib3 flask pyqt5`
  - Configure `nut.conf` (see below)
  - Run `python3 nut.py --help` to understand options
  
-## USB Server for DZ
-Ensure nut is configured correctly to see your NSP's, and run this command to enter USB server mode: nut.py --usb
+## USB Install for Tinfoil
+Run server.py or Windows users can use the precompiled nut.exe in the release section.
+
+Follow the directions found in the release page to install the USB driver.
+
+After you run the server, ensure NSP's are visible in the list.  If they are not, change the path and click the "scan" button.
+
+Connect your USB cable from your switch to your PC.
+
+Start Tinfoil, and all of the NSP's listed in nut server should now be available to install in Tinfoil.
+
+![alt text](https://raw.githubusercontent.com/blawar/nut/master/public_html/images/nutserver.png)
+
+## NUT Server Install for Tinfoil
+Run server.py or Windows users can use the precompiled nut.exe in the release section.
+
+After you run the server, ensure NSP's are visible in the list.  If they are not, change the path and click the "scan" button.
+
+Start Tinfoil, then go to locations, then select "Add New" location.  Enter the ip, port, username, and password that is displayed in the nut server application, then press save.
+
+All of the NSP's listed in nut server should now be available to install in Tinfoil.
+
+![alt text](https://raw.githubusercontent.com/blawar/nut/master/public_html/images/nutserver.png)
  
 ## Server GUI
 If you wish to run the server GUI, you must first download the images from nintendo.  You may do so with this command:
 nut.py -s --scrape
 
 This will take some time.  When it is complete, you can start the web server with:
-nut.py --server
+server.py
 
 Then point your web browser to localhost:9000
 
@@ -151,7 +172,6 @@ optional arguments:
                         export list of NSPs containing delta updates
   --silent              Suppress stdout/stderr output
   --json                JSON output
-  -S, --server          Run server daemon
   -m, --hostname        Set server hostname
   -p, --port            Set server port
   --scrape              Scrape ALL titles from Nintendo servers

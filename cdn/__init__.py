@@ -4,11 +4,11 @@ import os
 def regions():
 	return ['CO', 'AR', 'CL', 'PE', 'KR', 'HK', 'NZ', 'AT', 'BE', 'CZ', 'DK', 'ES', 'FI', 'GR', 'HU', 'NL', 'NO', 'PL', 'PT', 'RU', 'ZA', 'SE', 'MX', 'IT', 'CA', 'FR', 'DE', 'JP', 'AU', 'GB', 'US']
 
-def isValidCache(cacheFileName):
+def isValidCache(cacheFileName, expiration = 86400 * 4):
 	if not os.path.isfile(cacheFileName):
 		return False
 
-	if time.time() - os.path.getmtime(cacheFileName) < 604800:
+	if not expiration or time.time() - os.path.getmtime(cacheFileName) < expiration:
 		return True
 	return False
 
@@ -161,7 +161,7 @@ def download_game(titleId, ver, tkey=None, nspRepack=False, name='', verify=Fals
 	name = get_name(titleId)
 	gameType = ''
 
-	if name == 'Uknown Title':
+	if name == 'Unknown Title':
 		temp = "[" + titleId + "]"
 	else:
 		temp = name + " [" + titleId + "]"
@@ -268,8 +268,8 @@ class cnmt:
 		self.type = self.packTypes[read_u8(f, 0xC)]
 		self.id = '0%s' % format(read_u64(f, 0x0), 'x')
 		self.ver = str(read_u32(f, 0x8))
-		self.sysver = str(read_u64(f, 0x28))
-		self.dlsysver = str(read_u64(f, 0x18))
+		self.sysver = str(read_u32(f, 0x28))
+		self.dlsysver = str(read_u32(f, 0x18))
 		self.digest = hx(read_at(f, f.seek(0, 2) - 0x20, f.seek(0, 2))).decode()
 
 		with open(hdPath, 'rb') as ncaHd:

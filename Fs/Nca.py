@@ -1,7 +1,7 @@
-import aes128
-import Title
-import Titles
-import Hex
+from nut import aes128
+from nut import Title
+from nut import Titles
+from nut import Hex
 from binascii import hexlify as hx, unhexlify as uhx
 from struct import pack as pk, unpack as upk
 from hashlib import sha256
@@ -9,10 +9,10 @@ import Fs.Type
 import os
 import re
 import pathlib
-import Keys
-import Config
-import Print
-import Nsps
+from nut import Keys
+from nut import Config
+from nut import Print
+from nut import Nsps
 from tqdm import tqdm
 import Fs
 from Fs.File import File
@@ -57,6 +57,7 @@ class NcaHeader(File):
 		self.keyIndex = None
 		self.size = None
 		self.titleId = None
+		self.contentIndex = None
 		self.sdkVersion = None
 		self.cryptoType2 = None
 		self.rightsId = None
@@ -85,10 +86,7 @@ class NcaHeader(File):
 		self.keyIndex = self.readInt8()
 		self.size = self.readInt64()
 		self.titleId = hx(self.read(8)[::-1]).decode('utf-8').upper()
-		
-		self.readInt32() # padding
-		
-
+		self.contentIndex = self.readInt32()
 		self.sdkVersion = self.readInt32()
 		self.cryptoType2 = self.readInt8()
 		
@@ -140,6 +138,8 @@ class NcaHeader(File):
 				#Print.info('could not find title key!')
 		else:
 			self.titleKeyDec = self.key()
+
+		return True
 
 	def key(self):
 		return self.keys[2]
